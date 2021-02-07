@@ -18,12 +18,15 @@ export class Entry{
             let tmpVals = [];
             for(let j = 0; j < grouped[dbName].length; j++){
                 tmpFields.push(grouped[dbName][j].fieldName);
-                tmpVals.push(grouped[dbName][j].value);
+                tmpVals.push(grouped[dbName][j].valueType == 'integer' ? grouped[dbName][j].value : `'${grouped[dbName][j].value}'`);
             }
-            result += `(${tmpFields.join(',')}) VALUES('${tmpVals.join("','")}');`;
+            result += `(${tmpFields.join(',')}) VALUES(${tmpVals.join(",")});`;
         }
 
 
         return result;
+    }
+    public toString(): string {
+        return this.generateInsertSql();
     }
 }
