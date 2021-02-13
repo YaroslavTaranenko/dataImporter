@@ -32,7 +32,7 @@ const convertDataToJSON = async (
 ) => {
 	try {
 		const data = fs.readFileSync(
-			path.join(__dirname, "..", "data", "data.xml")
+			path.join(__dirname, "..", "data", "data-manual.xml")
 		);
 		console.log("Readed");
 		const dataJs = await parseStringPromise(data);
@@ -61,10 +61,45 @@ const getData = async (req: Request, res: Response, next: NextFunction) => {
 			categories: dataJs.yml_catalog.vendor["0"].categories["0"].category,
 			offers: dataJs.yml_catalog.vendor["0"].offers["0"].offer,
 		};
-		res.status(200).json(result);
+		let formatedCategories: any[] = [];
+		for (let i = 0; i < result.categories.length; i++) {
+			formatedCategories.push({
+				id: result.categories[i].$.id,
+				name: result.categories[i]._,
+				techpstid: "",
+			});
+		}
+		let formatedOffers: any[] = [];
+		for (let i = 0; i < result.offers.length; i++) {
+			formatedOffers.push({
+				id: result.offers[i].$.id,
+				categoryId: result.offers[i].categoryId[0],
+				vendor: result.offers[i].vendor[0],
+				model: result.offers[i].model[0],
+				url: result.offers[i].url[0],
+				picture: result.offers[i].picture,
+				documentation: result.offers[i].documentation,
+				price: result.offers[i].price[0],
+				currency: result.offers[i].currencyId[0],
+				description: result.offers[i].description[0],
+				param: result.offers[i].param,
+			});
+		}
+		fs.writeFileSync(
+			path.join(__dirname, "..", "data", "formated_categories.json"),
+			JSON.stringify(formatedCategories)
+		);
+		res.status(200).json({ formatedCategories, formatedOffers });
 	} catch (e) {
 		console.log(e);
 		res.status(500).send(e.message);
 	}
 };
+// const formatData = async(req: Request, res: Response, next: NextFunction)=>{
+// 	try{
+
+// 	}catch(e){
+
+// 	}
+// }
 export { downloadData, convertDataToJSON, getData };
