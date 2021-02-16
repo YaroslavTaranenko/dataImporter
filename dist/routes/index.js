@@ -26,4 +26,5 @@ exports.default = (function (app) {
     });
     app.get("/download_data", convertRoute.downloadData);
     app.get("/convert_to_json", convertRoute.convertDataToJSON);
+    app.get("/get_data", convertRoute.getData);
 });

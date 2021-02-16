@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertDataToJSON = exports.downloadData = void 0;
+exports.getData = exports.convertDataToJSON = exports.downloadData = void 0;
 var xml2js_1 = require("xml2js");
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
@@ -74,7 +74,7 @@ var convertDataToJSON = function (req, res, next) { return __awaiter(void 0, voi
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                data = fs_1.default.readFileSync(path_1.default.join(__dirname, "..", "data", "data.xml"));
+                data = fs_1.default.readFileSync(path_1.default.join(__dirname, "..", "data", "data-manual.xml"));
                 console.log("Readed");
                 return [4 /*yield*/, xml2js_1.parseStringPromise(data)];
             case 1:
@@ -94,3 +94,48 @@ var convertDataToJSON = function (req, res, next) { return __awaiter(void 0, voi
     });
 }); };
 exports.convertDataToJSON = convertDataToJSON;
+var getData = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var data, dataJs, result, formatedCategories, i, formatedOffers, i;
+    return __generator(this, function (_a) {
+        try {
+            data = fs_1.default.readFileSync(path_1.default.join(__dirname, "..", "data", "data.json"), { encoding: "utf8" });
+            dataJs = JSON.parse(data);
+            result = {
+                categories: dataJs.yml_catalog.vendor["0"].categories["0"].category,
+                offers: dataJs.yml_catalog.vendor["0"].offers["0"].offer,
+            };
+            formatedCategories = [];
+            for (i = 0; i < result.categories.length; i++) {
+                formatedCategories.push({
+                    id: result.categories[i].$.id,
+                    name: result.categories[i]._,
+                    techpstid: "",
+                });
+            }
+            formatedOffers = [];
+            for (i = 0; i < result.offers.length; i++) {
+                formatedOffers.push({
+                    id: result.offers[i].$.id,
+                    categoryId: result.offers[i].categoryId[0],
+                    vendor: result.offers[i].vendor[0],
+                    model: result.offers[i].model[0],
+                    url: result.offers[i].url[0],
+                    picture: result.offers[i].picture,
+                    documentation: result.offers[i].documentation,
+                    price: result.offers[i].price[0],
+                    currency: result.offers[i].currencyId[0],
+                    description: result.offers[i].description[0],
+                    param: result.offers[i].param,
+                });
+            }
+            fs_1.default.writeFileSync(path_1.default.join(__dirname, "..", "data", "formated_categories.json"), JSON.stringify(formatedCategories));
+            res.status(200).json({ formatedCategories: formatedCategories, formatedOffers: formatedOffers });
+        }
+        catch (e) {
+            console.log(e);
+            res.status(500).send(e.message);
+        }
+        return [2 /*return*/];
+    });
+}); };
+exports.getData = getData;

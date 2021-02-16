@@ -1,7 +1,10 @@
-const offers = (offers:any):any => {
+import {GrundfosProductParam, GrundfosProduct} from "../types/grundfos-product.type";
+import { GrundfosCategory } from "../types/grundfos-category.type";
+
+const offers = (offers:any[]):GrundfosProduct[] => {
 	const result = [];
 	for(let i = 0; i < offers.length; i++){
-		let tmp = {
+		let tmp:GrundfosProduct = {
 			vendorId: offers[i].$.id,
 			categoryId: offers[i].categoriId[0],
 			vendor: offers[i].vendor[0],
@@ -9,10 +12,8 @@ const offers = (offers:any):any => {
 			url: offers[i].url[0],
 			pictures: offers[i].picture,
 			documentations: offers[i].documentation,
-			price: { 
-				amount: offers[i].price[0],
-				currency: offers[i].currencyId[0]
-			},
+			price: offers[i].price[0],
+			currency: offers[i].currencyId[0],
 			description: offers[i].description[0],
 			params: []
 		}
@@ -26,8 +27,8 @@ const offers = (offers:any):any => {
 	}
 	return result;
 }
-const categories = (categories:any):any => {
-	const result = [];
+const categories = (categories:any[]):GrundfosCategory[] => {
+	const result:GrundfosCategory[] = [];
 	for(let i = 0; i < categories.length; i++){
 		result.push({
 			id: categories[i].$.id,
